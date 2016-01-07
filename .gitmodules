@@ -1,0 +1,3 @@
+[submodule "taiga-back"]
+	path = taiga-back
+	url = https://github.com/hcsturix74/taiga-back.git
