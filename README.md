@@ -1,2 +1,2 @@
 # savana-back
-Agile Collaborator Tool, based on Taiga
+Agile Customer Collaborator Tool, based on Taiga
