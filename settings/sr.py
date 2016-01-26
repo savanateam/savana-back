@@ -15,14 +15,13 @@
 
 
 SR = {
-    "taigaio_url": "https://taiga.io",
+    "savana_url": "https://savana.io",
     "social": {
-        "twitter_url": "https://twitter.com/taigaio",
-        "github_url": "https://github.com/taigaio",
+        "github_url": "https://github.com/savanateam",
     },
     "support": {
-        "url": "https://taiga.io/support",
-        "email": "support@taiga.io",
+        "url": "https://savana.io/support",
+        "email": "support@savana.io",
         "mailing_list": "https://groups.google.com/forum/#!forum/taigaio",
     }
 }
