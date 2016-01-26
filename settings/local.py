@@ -14,7 +14,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .development import *
-
 # DEBUG = False
 
 # ADMINS = (
@@ -22,17 +21,17 @@ from .development import *
 # )
 
 INSTALLED_APPS += [
-    'dbbackup',
+    #'dbbackup',
 ]
 
 DATABASES = {
     'default': {
         'ENGINE': 'transaction_hooks.backends.postgresql_psycopg2',
-        'NAME': 'taiga',
+        'NAME': 'savana',
         'PORT': '5432',
         'HOST': 'localhost',
-        # 'USER': 'postgres', # set on server
-        # 'PASSWORD': 'postgres',
+        'USER': 'postgres', # set on server
+        'PASSWORD': 'postgres',
     }
 }
 
@@ -45,6 +44,7 @@ DBBACKUP_FILENAME_TEMPLATE = '{databasename}-{datetime}.{extension}'
 
 DBBACKUP_STORAGE = 'dbbackup.storage.filesystem_storage'
 DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '')}
+
 
 # SITES = {
 #    "api": {

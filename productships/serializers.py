@@ -35,30 +35,49 @@ from taiga.users.serializers import UserBasicInfoSerializer
 from . import models
 
 
-class ProductIncrementSerializer(serializers.ModelSerializer):
-    # tags = TagsField(required=False)
-    # external_reference = PgArrayField(required=False)
-    # is_closed = serializers.Field(source="is_closed")
-    # comment = serializers.SerializerMethodField("get_comment")
+class ProductIncrementSerializer(WatchersValidator, VoteResourceSerializerMixin, EditableWatchedResourceModelSerializer,
+                                 serializers.ModelSerializer):
+    tags = TagsField(required=False)
+    external_reference = PgArrayField(required=False)
+    reviewed = serializers.Field(source="reviewed")
+    comment = serializers.SerializerMethodField("get_comment")
+    generated_user_stories = serializers.SerializerMethodField("get_generated_user_stories")
     description_html = serializers.SerializerMethodField("get_description_html")
-    # owner_extra_info = UserBasicInfoSerializer(source="owner", required=False, read_only=True)
+    owner_extra_info = UserBasicInfoSerializer(source="owner", required=False, read_only=True)
 
     class Meta:
         model = models.ProductIncrement
-        read_only_fields = ('id', 'created_date', 'modified_date')
+        read_only_fields = ('id','ref', 'created_date', 'modified_date')
 
     def get_comment(self, obj):
         # NOTE: This method and field is necessary to historical comments work
         return ""
 
+    def get_generated_user_stories(self, obj):
+        return [{
+            "id": us.id,
+            "ref": us.ref,
+            "subject": us.name,
+        } for us in obj.generated_user_stories.all()]
+
     def get_description_html(self, obj):
         return mdrender(obj.project, obj.description)
+
+
+class ProductIncrementNeighborsSerializer(NeighborsSerializerMixin, ProductIncrementSerializer):
+    def serialize_neighbor(self, neighbor):
+        return NeighborProductIncrementSerializer(neighbor).data
+
+
+class NeighborProductIncrementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductIncrement
+        fields = ("id", "ref", "name")
+        depth = 0
 
 
 class ProductIncrementListSerializer(ProductIncrementSerializer):
     class Meta:
         model = models.ProductIncrement
-        read_only_fields = ('id', 'created_date', 'modified_date')
+        read_only_fields = ('id', 'ref', 'created_date', 'modified_date')
         exclude = ("description", "description_html")
-
-

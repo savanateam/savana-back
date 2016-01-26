@@ -15,7 +15,6 @@
 
 from django.contrib import admin
 
-from taiga.projects.attachments.admin import AttachmentInline
 from taiga.projects.notifications.admin import WatchedInline
 from taiga.projects.votes.admin import VoteInline
 
@@ -23,23 +22,52 @@ from taiga.projects.votes.admin import VoteInline
 from . import models
 
 
+# class ProductIncrementAdmin(admin.ModelAdmin):
+#     list_display = ["id", "name", "project"]
+#     list_display_links = ["id", "name"]
+#     inlines = [WatchedInline, VoteInline]
+#     raw_id_fields = ["project"]
+#     search_fields = ["description", "id", ]
+
+    # def get_object(self, *args, **kwargs):
+    #     self.obj = super().get_object(*args, **kwargs)
+    #     return self.obj
+    #
+    # def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    #     if (db_field.name in ["status", "milestone", "user_story"]
+    #             and getattr(self, 'obj', None)):
+    #         kwargs["queryset"] = db_field.related.model.objects.filter(
+    #                                                   project=self.obj.project)
+    #     elif (db_field.name in ["owner", "assigned_to"]
+    #             and getattr(self, 'obj', None)):
+    #         kwargs["queryset"] = db_field.related.model.objects.filter(
+    #                                      memberships__project=self.obj.project)
+    #     return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    #
+    # def formfield_for_manytomany(self, db_field, request, **kwargs):
+    #     if (db_field.name in ["watchers"]
+    #             and getattr(self, 'obj', None)):
+    #         kwargs["queryset"] = db_field.related.parent_model.objects.filter(
+    #                                      memberships__project=self.obj.project)
+    #     return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 class ProductIncrementAdmin(admin.ModelAdmin):
-    list_display = ["id", "project"]
-    list_display_links = ["id"]
-    inlines = [WatchedInline, VoteInline]
+    list_display = ["id","name", "reviewed", "project",]
+    list_display_links = ["id","name"]
+    search_fields = ["id", "attachments", "project__name", "project__slug"]
     raw_id_fields = ["project"]
-    search_fields = ["description", "id", ]
+    inlines = [WatchedInline, VoteInline]
 
     def get_object(self, *args, **kwargs):
         self.obj = super().get_object(*args, **kwargs)
         return self.obj
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if (db_field.name in ["status", "milestone", "user_story"]
+        if (db_field.name in ["milestone"]
                 and getattr(self, 'obj', None)):
             kwargs["queryset"] = db_field.related.model.objects.filter(
                                                       project=self.obj.project)
-        elif (db_field.name in ["owner", "assigned_to"]
+        elif (db_field.name in ["owner"]
                 and getattr(self, 'obj', None)):
             kwargs["queryset"] = db_field.related.model.objects.filter(
                                          memberships__project=self.obj.project)
@@ -52,4 +80,17 @@ class ProductIncrementAdmin(admin.ModelAdmin):
                                          memberships__project=self.obj.project)
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
+
+
+class MediaMarkerAdmin(admin.ModelAdmin):
+    list_display = ["id","attachment", "created_date", "modified_date", "owner",]
+    list_display_links = ["id", "attachment",]
+    search_fields = ["marker_content",]
+    #raw_id_fields = ["project"]
+
+
 admin.site.register(models.ProductIncrement, ProductIncrementAdmin)
+admin.site.register(models.MediaMarker, MediaMarkerAdmin)
+
+
+

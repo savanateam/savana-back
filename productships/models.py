@@ -26,16 +26,20 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import get_valid_filename
+from taiga.projects.occ.mixins import OCCModelMixin
+from taiga.projects.notifications.mixins import WatchedModelMixin
+from taiga.base.tags import TaggedMixin
+from djorm_pgarray.fields import TextArrayField
 
-
-class ProductIncrement(models.Model):
+class ProductIncrement(OCCModelMixin, WatchedModelMixin, TaggedMixin, models.Model):
     """
     Potetially Shippable Product Increment - Drops and / or demos to the customer
     """
-    # owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-    #                           related_name="change_product_increments",
-    #                           verbose_name=_("owner"))
-
+    ref = models.BigIntegerField(db_index=True, null=True, blank=True, default=None,
+                                 verbose_name=_("ref"))
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
+                               related_name="change_product_increments",
+                               verbose_name=_("owner"))
     project = models.ForeignKey("projects.Project", null=False, blank=False,
                                 related_name="product_increments", verbose_name=_("project"))
     created_date = models.DateTimeField(null=False, blank=False,
@@ -44,29 +48,33 @@ class ProductIncrement(models.Model):
     modified_date = models.DateTimeField(null=False, blank=False,
                                          verbose_name=_("modified date"))
     name = models.CharField(blank=True, default="", max_length=500)
+    milestone = models.ForeignKey("milestones.Milestone", null=True, blank=True,
+                                  default=None, related_name="product_increments",
+                                  verbose_name=_("milestone"))
     attachments = generic.GenericRelation("attachments.Attachment")
     reviewed = models.BooleanField(default=False, verbose_name=_("reviewed"))
     description = models.TextField(null=False, blank=True, verbose_name=_("description"))
     order = models.IntegerField(default=0, null=False, blank=False, verbose_name=_("order"))
-
+    external_reference = TextArrayField(default=None, verbose_name=_("external reference"))
     _importing = None
 
 
-class Meta:
-    verbose_name = "product_increment"
-    verbose_name_plural = "product_increments"
-    ordering = ["project", "created_date", "id"]
-    permissions = (
-        ("view_product_increment", "Can view product increment"),
-    )
+    class Meta:
+        verbose_name = "product_increment"
+        verbose_name_plural = "product_increments"
+        ordering = ["project", "created_date", "-id"]
+        permissions = (
+            ("view_product_increment", "Can view product increment"),
+        )
+
+    def save(self, *args, **kwargs):
+            if not self._importing or not self.modified_date:
+                self.modified_date = timezone.now()
+            return super().save(*args, **kwargs)
 
 
-def __init__(self, *args, **kwargs):
-    super(ProductIncrement, self).__init__(*args, **kwargs)
-
-
-def __str__(self):
-    return "Product Increment: {}".format(self.id)
+    def __str__(self):
+        return "Product Increment: {}".format(self.id)
 
 
 class MediaMarker(models.Model):
@@ -92,9 +100,3 @@ class MediaMarker(models.Model):
         permissions = (
             ("view_media_marker", "Can view media marker"),
         )
-
-    def __init__(self, *args, **kwargs):
-        super(MediaMarker, self).__init__(*args, **kwargs)
-
-        def verify_xml(self, xml):
-            pass
