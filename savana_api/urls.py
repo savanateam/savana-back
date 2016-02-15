@@ -30,7 +30,7 @@ router.register(r"increments", ProductIncrementViewSet, base_name="increments")
 router.register(r"increments/(?P<resource_id>\d+)/watchers", ProductIncrementWatchersViewSet, base_name="increments-watchers")
 router.register(r"increments/(?P<resource_id>\d+)/voters", ProductIncrementVotersViewSet, base_name="increments-voters")
 
-router.register(r"productincrements/attachments", ProductIncrementAttachmentViewSet, base_name="increments-attachments")
+router.register(r"productincrements/attachments", ProductIncrementAttachmentViewSet, base_name="productincrement-attachments")
 
 
 ##############################################
