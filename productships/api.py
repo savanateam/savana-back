@@ -42,11 +42,12 @@ from . import serializers
 from . import services
 
 
-
-class CanViewProductIncrementsFilterBackend(filters.PermissionBasedFilterBackend):
+class CanViewProductIncrementAttachmentFilterBackend(filters.PermissionBasedAttachmentFilterBackend):
     permission = "view_productincrements"
 
 
+class CanViewProductIncrementsFilterBackend(filters.PermissionBasedFilterBackend):
+    permission = "view_productincrements"
 
 
 class ProductIncrementViewSet(OCCResourceMixin, VotedResourceMixin, HistoryResourceMixin, WatchedResourceMixin,
@@ -182,7 +183,8 @@ class ProductIncrementWatchersViewSet(WatchersViewSetMixin, ModelListViewSet):
 
 # Adding here also the corresponding attachment viewset
 
+
 class ProductIncrementAttachmentViewSet(BaseAttachmentViewSet):
     permission_classes = (permissions.ProductIncrementAttachmentPermission,)
-    #filter_backends = (filters.CanViewProductIncrementAttachmentFilterBackend,)
-    content_type = "productincrements.productincrement"
+    filter_backends = (CanViewProductIncrementAttachmentFilterBackend,)
+    content_type = "productships.productincrement"
