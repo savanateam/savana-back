@@ -31,6 +31,7 @@ from taiga.projects.notifications.mixins import WatchedModelMixin
 from taiga.base.tags import TaggedMixin
 from djorm_pgarray.fields import TextArrayField
 
+
 class ProductIncrement(OCCModelMixin, WatchedModelMixin, TaggedMixin, models.Model):
     """
     Potetially Shippable Product Increment - Drops and / or demos to the customer
@@ -38,8 +39,8 @@ class ProductIncrement(OCCModelMixin, WatchedModelMixin, TaggedMixin, models.Mod
     ref = models.BigIntegerField(db_index=True, null=True, blank=True, default=None,
                                  verbose_name=_("ref"))
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True,
-                               related_name="change_product_increments",
-                               verbose_name=_("owner"))
+                              related_name="change_product_increments",
+                              verbose_name=_("owner"))
     project = models.ForeignKey("projects.Project", null=False, blank=False,
                                 related_name="product_increments", verbose_name=_("project"))
     created_date = models.DateTimeField(null=False, blank=False,
@@ -58,20 +59,18 @@ class ProductIncrement(OCCModelMixin, WatchedModelMixin, TaggedMixin, models.Mod
     external_reference = TextArrayField(default=None, verbose_name=_("external reference"))
     _importing = None
 
-
     class Meta:
         verbose_name = "product_increment"
         verbose_name_plural = "product_increments"
         ordering = ["project", "created_date", "-id"]
         permissions = (
-            ("view_product_increment", "Can view product increment"),
+            ("view_productincrement", "Can view product increments"),
         )
 
     def save(self, *args, **kwargs):
-            if not self._importing or not self.modified_date:
-                self.modified_date = timezone.now()
-            return super().save(*args, **kwargs)
-
+        if not self._importing or not self.modified_date:
+            self.modified_date = timezone.now()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return "Product Increment: {}".format(self.id)

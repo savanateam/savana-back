@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from taiga.base.api.permissions import (TaigaResourcePermission, HasProjectPerm,PermissionComponent,
+from taiga.base.api.permissions import (TaigaResourcePermission, HasProjectPerm, PermissionComponent,
                                         IsAuthenticated, IsProjectOwner, AllowAny,
                                         IsSuperUser)
 from taiga.projects.attachments.permissions import IsAttachmentOwnerPerm
@@ -33,6 +33,22 @@ class ProductIncrementPermission(TaigaResourcePermission):
     unwatch_perms = IsAuthenticated() & HasProjectPerm('view_productsincrements')
 
 
+class HasProductIncrementIdUrlParam(PermissionComponent):
+    def check_permissions(self, request, view, obj=None):
+        # TODO: check this (dario, luca)
+        param = view.kwargs.get('product_increment_id', None)
+        if param:
+            return True
+        return False
+
+
+class ProductIncrementVotersPermission(TaigaResourcePermission):
+    enought_perms = IsProjectOwner() | IsSuperUser()
+    global_perms = None
+    retrieve_perms = HasProjectPerm('view_productincrements')
+    list_perms = HasProjectPerm('view_productincrements')
+
+
 class ProductIncrementWatchersPermission(TaigaResourcePermission):
     enought_perms = IsProjectOwner() | IsSuperUser()
     global_perms = None
@@ -46,27 +62,4 @@ class ProductIncrementAttachmentPermission(TaigaResourcePermission):
     update_perms = HasProjectPerm('modify_productincrement') | IsAttachmentOwnerPerm()
     partial_update_perms = HasProjectPerm('modify_productincrement') | IsAttachmentOwnerPerm()
     destroy_perms = HasProjectPerm('modify_productincrement') | IsAttachmentOwnerPerm()
-    list_perms = AllowAny()
-
-class HasProductIncrementIdUrlParam(PermissionComponent):
-    def check_permissions(self, request, view, obj=None):
-        param = view.kwargs.get('product_increment_id', None)
-        if param:
-            return True
-        return False
-
-
-class ProductIncrementVotersPermission(TaigaResourcePermission):
-    enought_perms = IsProjectOwner() | IsSuperUser()
-    global_perms = None
-    retrieve_perms = HasProjectPerm('view_product_increments')
-
-
-
-class ProductIncrementAttachmentPermission(TaigaResourcePermission):
-    retrieve_perms = HasProjectPerm('view_pi') | IsAttachmentOwnerPerm()
-    create_perms = HasProjectPerm('modify_pi')
-    update_perms = HasProjectPerm('modify_pi') | IsAttachmentOwnerPerm()
-    partial_update_perms = HasProjectPerm('modify_pi') | IsAttachmentOwnerPerm()
-    destroy_perms = HasProjectPerm('modify_pi') | IsAttachmentOwnerPerm()
     list_perms = AllowAny()
