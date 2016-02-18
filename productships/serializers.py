@@ -41,24 +41,17 @@ class ProductIncrementSerializer(WatchersValidator, VoteResourceSerializerMixin,
     external_reference = PgArrayField(required=False)
     reviewed = serializers.Field(source="reviewed")
     comment = serializers.SerializerMethodField("get_comment")
-    generated_user_stories = serializers.SerializerMethodField("get_generated_user_stories")
+    # generated_user_stories = serializers.SerializerMethodField("get_generated_user_stories")
     description_html = serializers.SerializerMethodField("get_description_html")
     owner_extra_info = UserBasicInfoSerializer(source="owner", required=False, read_only=True)
 
     class Meta:
         model = models.ProductIncrement
-        read_only_fields = ('id','ref', 'created_date', 'modified_date')
+        read_only_fields = ('id', 'ref', 'created_date', 'modified_date')
 
     def get_comment(self, obj):
         # NOTE: This method and field is necessary to historical comments work
         return ""
-
-    def get_generated_user_stories(self, obj):
-        return [{
-            "id": us.id,
-            "ref": us.ref,
-            "subject": us.name,
-        } for us in obj.generated_user_stories.all()]
 
     def get_description_html(self, obj):
         return mdrender(obj.project, obj.description)

@@ -15,6 +15,7 @@
 
 from collections import OrderedDict
 
+
 def _get_productincrements_owners(project, queryset):
     compiler = connection.ops.compiler(queryset.query.compiler)(queryset.query, connection, None)
     queryset_where_tuple = queryset.query.where.as_sql(compiler, connection)
@@ -65,6 +66,7 @@ def _get_productincrements_owners(project, queryset):
             })
     return sorted(result, key=itemgetter("full_name"))
 
+
 def _get_productincrements_tags(queryset):
     tags = []
     for t_list in queryset.values_list("tags", flat=True):
@@ -75,6 +77,7 @@ def _get_productincrements_tags(queryset):
     tags = [{"name":e, "count":tags.count(e)} for e in set(tags)]
 
     return sorted(tags, key=itemgetter("name"))
+
 
 def get_product_increment_filters_data(project, querysets):
     """
