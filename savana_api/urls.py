@@ -19,7 +19,7 @@ from django.contrib import admin
 
 from .routers import router
 from taiga.contrib_routers import router as contrib_router
-
+from taiga.projects.history.api import ProductIncrementHistory
 
 from productships.api import ProductIncrementViewSet, ProductIncrementVotersViewSet,\
     ProductIncrementWatchersViewSet, ProductIncrementAttachmentViewSet
@@ -30,7 +30,7 @@ router.register(r"increments/attachments", ProductIncrementAttachmentViewSet, ba
 router.register(r"increments", ProductIncrementViewSet, base_name="increments")
 router.register(r"increments/(?P<resource_id>\d+)/watchers", ProductIncrementWatchersViewSet, base_name="increments-watchers")
 router.register(r"increments/(?P<resource_id>\d+)/voters", ProductIncrementVotersViewSet, base_name="increments-voters")
-
+router.register(r"history/increments", ProductIncrementHistory, base_name="increments-history")
 
 ##############################################
 # Default
