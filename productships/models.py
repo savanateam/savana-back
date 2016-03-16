@@ -26,6 +26,8 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import get_valid_filename
+
+from django_pgjson.fields import JsonField
 from taiga.projects.occ.mixins import OCCModelMixin
 from taiga.projects.notifications.mixins import WatchedModelMixin
 from taiga.base.tags import TaggedMixin
@@ -91,6 +93,7 @@ class MediaMarker(models.Model):
     modified_date = models.DateTimeField(null=False, blank=False,
                                          verbose_name=_("modified date"))
     marker_content = models.TextField(null=False, blank=True, verbose_name=_("marker_content"))
+    marker_json = JsonField(null=True, blank=True)
 
     class Meta:
         verbose_name = "media_marker"

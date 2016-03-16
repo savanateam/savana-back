@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import json
 from taiga.base.api import serializers
 
-from taiga.base.fields import TagsField
+from taiga.base.fields import TagsField, JsonField
 from taiga.base.fields import PgArrayField
 
 from taiga.base.neighbors import NeighborsSerializerMixin
@@ -74,3 +74,17 @@ class ProductIncrementListSerializer(ProductIncrementSerializer):
         model = models.ProductIncrement
         read_only_fields = ('id', 'ref', 'created_date', 'modified_date')
         exclude = ("description", "description_html")
+
+
+class MarkerSerializer(serializers.ModelSerializer):
+
+    data = serializers.SerializerMethodField("get_data")
+    marker_json = JsonField()
+
+    class Meta:
+        model = models.MediaMarker
+        read_only_fields = ('id', 'created_date', 'modified_date')
+        exclude = ("marker_json", )
+
+    def get_data(self, obj):
+        return obj.marker_json
